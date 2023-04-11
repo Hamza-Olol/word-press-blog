@@ -10,5 +10,7 @@ sudo yum install -y httpd mariadb-server
 ## Start apache
 sudo systemctl start httpd
 sudo systemctl enable httpd
+# test
+echo "<h1>Hellow World" > /var/www/html/index.html
 # verify  httpd is running: "sudo systemctl is-enabled httpd"
 

@@ -9,6 +9,6 @@ variable "cidr-range" {
 }
 
 variable "public-subnet" {
-  type    = string
-  default = "10.0.0.0/28"
+  type    = list(string)
+  default = ["10.0.0.0/28"]
 }

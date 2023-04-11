@@ -10,5 +10,5 @@ variable "instance_type" {
 
 variable "key_name" {
   type    = string
-  default = "HO-wordpress.pem"
+  default = "HO-wordpress"
 }

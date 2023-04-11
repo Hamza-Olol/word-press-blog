@@ -8,5 +8,6 @@ module "sg" {
 
   ingress_cidr_blocks = var.my-ip
   ingress_rules       = ["ssh-tcp", "http-80-tcp", "https-443-tcp"]
+  egress_rules = ["all-all"]
   tags                = local.common_tags
 }
