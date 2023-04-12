@@ -1,5 +1,5 @@
 variable "azs" {
-  type    = list
+  type    = list(any)
   default = ["eu-north-1a"]
 }
 
