@@ -14,19 +14,12 @@ sudo systemctl enable httpd
 
 sudo usermod -a -G apache ec2-user
 # exit
+# verify this later by running 'groups' in cli
 sudo chown -R ec2-user:apache /var/www
 sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
 find /var/www -type f -exec sudo chmod 0664 {} \;
 
-# Install phpMyAdmin
-sudo yum install php-mbstring php-xml -y
-sudo systemctl restart httpd
-sudo systemctl restart php-fpm
-cd /var/www/html
-wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
-mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
-rm phpMyAdmin-latest-all-languages.tar.gz
-
+# Secure the database server
 sudo systemctl start mariadb
 sudo mysql_secure_installation <<EOF
 
@@ -38,12 +31,29 @@ y
 y
 y
 EOF
+sudo systemctl stop mariadb
+
+# Install phpMyAdmin to manage the DB
+sudo yum install php-mbstring php-xml -y
+sudo systemctl restart httpd
+sudo systemctl restart php-fpm
+cd /var/www/html
+wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz
+mkdir phpMyAdmin && tar -xvzf phpMyAdmin-latest-all-languages.tar.gz -C phpMyAdmin --strip-components 1
+rm phpMyAdmin-latest-all-languages.tar.gz
+
+# test
+echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php
+
+# at this point, i can http search the server. to allow https, i will need to enable TLS and 
+# install an SSL cert https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/SSL-on-amazon-linux-2.html
+
 
 # Download and extract WordPress
 wget https://wordpress.org/latest.tar.gz
 tar -xzf latest.tar.gz
 mkdir /var/www/html/blog
-mv /var/www/html/wordpress/* /var/www/html/blog
+cp -r /var/www/html/wordpress/* /var/www/html/blog/
 rm -rf /var/www/html/wordpress/
 rm -f latest.tar.gz
 
@@ -51,38 +61,52 @@ rm -f latest.tar.gz
 # Create a database and user for WordPress
 # mysql -u root -ppassword <<EOF
 sudo systemctl start mariadb
-mysql -u root -p <<EOF
+mysql -u root -p"password" <<EOF
+
 CREATE USER 'wordpress-user'@'localhost' IDENTIFIED BY 'password';
 CREATE DATABASE `wordpress-db`;
-GRANT ALL PRIVILEGES ON `wordpress-db` TO "wordpress-user"@"localhost";
+GRANT ALL PRIVILEGES ON `wordpress-db`.* TO "wordpress-user"@"localhost";
 FLUSH PRIVILEGES;
+exit
 EOF
 
+#test
+mkdir /var/www/html/testingscript/
+
 # Configure WordPress
-mv /var/www/html/blog/wp-config-sample.php /var/www/html/blog/wp-config.php
+cp /var/www/html/blog/wp-config-sample.php /var/www/html/blog/wp-config.php
 sudo sed -i "s/database_name_here/wordpress-db/g" /var/www/html/blog/wp-config.php
 sudo sed -i "s/username_here/wordpress-user/g" /var/www/html/blog/wp-config.php
 sudo sed -i "s/password_here/password/g" /var/www/html/blog/wp-config.php
 
+#test
+mkdir /var/www/html/testingscript100/
+
+# can use key and salts to provide an extra layer of encryption
+
+
+
+# Allow WordPress to use permalinks
+sudo sed -i "515s/AllowOverride None/AllowOverride All/" /etc/httpd/conf/httpd.conf
+
+
+# To install the PHP graphics drawing library on Amazon Linux 2
+sudo yum install php-gd
+
+
 # Set permissions for WordPress
+# # chown -R apache:apache /var/www/html/
+# # chmod -R 755 /var/www/html/
 sudo chown -R apache /var/www
 sudo chown -R apache /var/www
 sudo chmod 2775 /var/www
 find /var/www -type d -exec sudo chmod 2775 {} \;
+find /var/www -type f -exec sudo chmod 0644 {} \;
 
-sudo sed -i "515s/AllowOverride None/AllowOverride All/" /etc/httpd/conf/httpd.conf
-
-# # Set permissions for WordPress
-# # # chown -R apache:apache /var/www/html/
-# # # chmod -R 755 /var/www/html/
-# sudo chown -R apache /var/www
-# sudo chgrp -R apache /var/www
-# sudo chmod 2775 /var/www
-# find /var/www -type d -exec sudo chmod 2775 {} \;\find /var/www -type f -exec sudo chmod 0644 {} \;
 
 # Restart Apache
 sudo systemctl restart httpd
+
+# ensure that the httpd and database services start at every system boot.
 sudo systemctl enable httpd && sudo systemctl enable mariadb
 
-# To install the PHP graphics drawing library on Amazon Linux 2
-sudo yum install php-gd
