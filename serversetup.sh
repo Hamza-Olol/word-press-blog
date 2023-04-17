@@ -13,8 +13,6 @@ sudo systemctl enable httpd
 # verify  httpd is running: "sudo systemctl is-enabled httpd"
 
 sudo usermod -a -G apache ec2-user
-# exit
-# verify this later by running 'groups' in cli
 sudo chown -R ec2-user:apache /var/www
 sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;
 find /var/www -type f -exec sudo chmod 0664 {} \;
@@ -52,7 +50,6 @@ rm -rf /var/www/html/wordpress/
 rm -f latest.tar.gz
 
 # Create a database and user for WordPress
-
 touch create-db.sql
 cat <<EOT >> create-db.sql
 CREATE DATABASE \`wordpress-db\`;

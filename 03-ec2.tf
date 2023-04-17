@@ -12,7 +12,6 @@ module "ec2_instance" {
   key_name      = var.key_name
   #   monitoring             = true
   vpc_security_group_ids = [module.sg.security_group_id]
-  # subnet_id              = "module.vpc.public_subnets"
   subnet_id                   = element(module.vpc.public_subnets, 0)
   user_data                   = file("serversetup.sh")
   associate_public_ip_address = true

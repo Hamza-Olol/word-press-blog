@@ -31,11 +31,5 @@ override.tf.json
 # Ignore Pem keys
 *.pem
 
-# Commands to run on cli
-commands.txt
-
-# temp
-fullscript.sh
-
 # ignore ip address file
 my-ip.tf
