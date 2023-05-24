@@ -1,6 +1,10 @@
 # README #
 
 WIP:
+    To do:
+        - Configure the DB
+        - Implement monitoring by building a CLoudwatch Dashboard.
+        - Think about backup and restore.
 
 Two tier architecture hosting a Word press Blog in two availability zones.
 
