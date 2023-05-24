@@ -5,6 +5,7 @@ WIP:
         - Configure the DB
         - Implement monitoring by building a CLoudwatch Dashboard.
         - Think about backup and restore.
+        - Include a github actions pipeline aswell.
 
 Two tier architecture hosting a Word press Blog in two availability zones.
 
