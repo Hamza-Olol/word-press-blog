@@ -11,7 +11,6 @@ sudo yum install -y httpd mariadb-server
 sudo systemctl start httpd
 sudo systemctl enable httpd
 # verify  httpd is running: "sudo systemctl is-enabled httpd"
-
 sudo usermod -a -G apache ec2-user
 sudo chown -R ec2-user:apache /var/www
 sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \;

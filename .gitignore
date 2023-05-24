@@ -32,4 +32,4 @@ override.tf.json
 *.pem
 
 # ignore ip address file
-my-ip.tf
+# my-ip.tf

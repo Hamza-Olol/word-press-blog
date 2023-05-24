@@ -1,11 +1,4 @@
-output "instance_id" {
-  value = module.ec2_instance.id
-}
-
-output "public_ip" {
-  value = module.ec2_instance.public_ip
-}
-
-output "public_dns" {
-  value = module.ec2_instance.public_dns
+output "ec2_multiple" {
+  description = "The full output of the `ec2_module` module"
+  value       = module.ec2_instance
 }
